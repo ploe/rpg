@@ -1,4 +1,4 @@
-Actor = require("Actor.lua")
+Actor = require("Actor")
 
 function love.load()
 	JIFFY = 1/30
