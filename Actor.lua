@@ -11,9 +11,9 @@ local Actor_prototype = {
 local mt = {}
 mt.__index = Actor_prototype
 
-function Actor_prototype:loadcostume(filename, w, h, scale)
-	self.image = love.graphics.newImage(filename)
-	if not self.image then
+function Actor_prototype:loadCostume(filename, w, h, scale)
+	self.costume = love.graphics.newImage(filename)
+	if not self.costume then
 		print("Image not found, failed")
 		return
 	end
@@ -23,8 +23,8 @@ function Actor_prototype:loadcostume(filename, w, h, scale)
 		self.clip.y,
 		self.clip.w, 
 		self.clip.h, 
-		self.image:getWidth(),
-		self.image:getHeight()
+		self.costume:getWidth(),
+		self.costume:getHeight()
 	)
 	
 end
@@ -34,7 +34,7 @@ end
 	a clip is an individual frame in a reel
 ]]
 
-local function updateviewport(self)
+local function updateViewport(self)
 	self.quad:setViewport(
 		self.clip.x, 
 		self.clip.y, 
@@ -43,24 +43,29 @@ local function updateviewport(self)
 	)
 end
 
-function Actor_prototype:jumpreel(reel)
+function Actor_prototype:jumpReel(reel)
 	self.clip.y = self.clip.h * reel;
-	updateviewport(self)
 end
 
-function Actor_prototype:jumpclip(clip)
+function Actor_prototype:jumpClip(clip)
 	self.clip.x = self.clip.w * clip
-	updateviewport(self)
 end
 
-function Actor_prototype:nextclip()
+function Actor_prototype:nextClip()
 	self.clip.x = self.clip.x + self.clip.w
-	updateviewport(self)
 end
 
-function Actor_prototype:prevclip()
+function Actor_prototype:prevClip()
 	self.clip.x = self.clip.x - self.clip.w
-	updateviewport(self)
+end
+
+--[[	The updateClip method is called every frame for every Actor on the stack ]]
+
+function Actor_prototype:updateClip()
+	self.tick = self.tick - 1
+	if self.animate then self:animate() end
+	updateViewport(self)
+	love.graphics.drawq(self.costume, self.quad, self.x, self.y)
 end
 
 --[[ lib is the public interface for the Actor module ]]
@@ -72,6 +77,5 @@ function lib.new(tag)
 	setmetatable(a, mt)
 	return a
 end
-
 
 return lib
