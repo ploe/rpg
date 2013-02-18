@@ -1,4 +1,5 @@
 Actor = require("Actor")
+require('Map')
 
 function love.load()
 	JIFFY = 1/30
@@ -17,6 +18,10 @@ function love.load()
 	brum.tick = 12
 	brum.animate = brum.sleep
 
+    if not Map.loadFromFile("maps/plains.lua") then
+        print('Failed to load map')
+        love.event.quit()
+    end
 end
 
 function love.update()
@@ -24,6 +29,7 @@ function love.update()
 end
 
 function love.draw()
+    Map.draw()
 	love.graphics.setCaption("Baggage Reclaim Man - Gotta LOVE lime")
 	-- love.graphics.print('hello, world.', 400, 300
 	brum:updateClip()
