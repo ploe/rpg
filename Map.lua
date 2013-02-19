@@ -26,43 +26,39 @@ function Map.loadFromFile(filename)
     
     -- Read and execute map as lua script
     local data = love.filesystem.read(filename)
-    local myMap = assert(loadstring(data))()
+    Map.map = assert(loadstring(data))()
     
-    if not validate(myMap) then
+    if not validate(Map.map) then
         return false
     end
     
     -- Load tileset
     local prefix = 'tilesets/'
-    data = love.filesystem.read(prefix..myMap.tileset..'.lua')
-    local tileset = assert(loadstring(data))()
-    local image = love.graphics.newImage(prefix..tileset.source)
+    data = love.filesystem.read(prefix..Map.map.tileset..'.lua')
+    Map.tileset = assert(loadstring(data))()
+    Map.image = love.graphics.newImage(prefix..Map.tileset.source)
     Map.batch = {}
     
     -- Set up a sprite batch for each layer
-    for l = 1, myMap.layers.count do
-        Map.batch[l] = love.graphics.newSpriteBatch(image)
-        for y = 1, myMap.height do
-            for x = 1, myMap.width do
-                -- Get tileset tile
-                local idx = myMap.layers[l][(y - 1) * myMap.width + x]
+    for l = 1, Map.map.layers.count do
+        Map.batch[l] = love.graphics.newSpriteBatch(Map.image)
+        for y = 1, Map.map.height do
+            for x = 1, Map.map.width do
+                -- Get Map.tileset tile
+                local idx = Map.map.layers[l][(y - 1) * Map.map.width + x]
                 if idx ~= 0 then
-                    local tile = tileset[idx]
+                    local tile = Map.tileset[idx]
                     if tile == nil then
-                        print('['..prefix..myMap.tileset..'.lua] Bad tile: '..idx)
+                        print('['..prefix..Map.map.Map.tileset..'.lua] Bad tile: '..idx)
                         return false
                     end
                     -- Add to the sprite batch
-                    local quad = love.graphics.newQuad(tile.offset.x, tile.offset.y, tileset.tileWidth, tileset.tileHeight, image:getWidth(), image:getHeight())
-                    Map.batch[l]:addq(quad, (x - 1) * tileset.tileWidth, (y - 1) * tileset.tileHeight)
+                    local quad = love.graphics.newQuad(tile.offset.x, tile.offset.y, Map.tileset.tileWidth, Map.tileset.tileHeight, Map.image:getWidth(), Map.image:getHeight())
+                    Map.batch[l]:addq(quad, (x - 1) * Map.tileset.tileWidth, (y - 1) * Map.tileset.tileHeight)
                 end
             end
         end
     end
-    
-    -- Assign map reference
-    Map.map = myMap
-    
     return true
 end
 
