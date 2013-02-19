@@ -1,9 +1,9 @@
 Actor = require("Actor")
+require("Action")
 require('Map')
---require('Editor')
+require('Editor')
 
 -- Message passing interface, so one callback process can communicate with the rest, the stack is purged every frame
-Signal = {}
 
 function love.load()
 	JIFFY = 1/30
@@ -25,7 +25,7 @@ function love.load()
 	end
 	brum.tick = 12
 	brum.animate = brum.sleep
-	--Editor.init()
+	Editor.init()
 
     if not Map.load("plains.lua") then
         print('Failed to load map')
@@ -33,40 +33,20 @@ function love.load()
     end
 end
 
-InputDaemon = {}
---[[ The keys we want mapping ]]
-InputDaemon.keys = {
-	up = "up",
-	down = "down",
-	left = "left",
-	right = "right"
-}
-
-function InputDaemon:update()
-	for key, value in pairs(self.keys) do
-		if love.keyboard.isDown(value) then Signal[key .. " pressed"] = true end
-	end
-end
-
-function InputDaemon.logKeys()
-
-end
-
 function love.update()
 	start = love.timer.getMicroTime()
---	Editor.update()
+	Editor.update()
 end
 
---function love.mousepressed(x, y, button)
---	Editor.mousepressed(x, y, button)
---end
+function love.mousepressed(x, y, button)
+	Editor.mousepressed(x, y, button)
+end
 
 function love.draw()
 	Map.draw()
 	love.graphics.setCaption("Baggage Reclaim Man - Gotta LOVE lime")
-	-- love.graphics.print('hello, world.', 400, 300
-	--Editor.draw()
-	InputDaemon:update();
+	Editor.draw()
+	Action:update()
 	brum:updateClip()
 	if love.timer.getMicroTime() <= start + JIFFY then love.timer.sleep(start + JIFFY - love.timer.getMicroTime()) end
 	Signal = {}
