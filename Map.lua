@@ -42,24 +42,29 @@ function Map.loadFromFile(filename)
     -- Set up a sprite batch for each layer
     for l = 1, Map.map.layers.count do
         Map.batch[l] = love.graphics.newSpriteBatch(Map.image)
-        for y = 1, Map.map.height do
-            for x = 1, Map.map.width do
-                -- Get Map.tileset tile
-                local idx = Map.map.layers[l][(y - 1) * Map.map.width + x]
-                if idx ~= 0 then
-                    local tile = Map.tileset[idx]
-                    if tile == nil then
-                        print('['..prefix..Map.map.Map.tileset..'.lua] Bad tile: '..idx)
-                        return false
-                    end
-                    -- Add to the sprite batch
-                    local quad = love.graphics.newQuad(tile.offset.x, tile.offset.y, Map.tileset.tileWidth, Map.tileset.tileHeight, Map.image:getWidth(), Map.image:getHeight())
-                    Map.batch[l]:addq(quad, (x - 1) * Map.tileset.tileWidth, (y - 1) * Map.tileset.tileHeight)
+        Map.updateBatch(l)
+    end
+    return true
+end
+
+function Map.updateBatch(layer)
+    Map.batch[layer]:clear()
+    for y = 1, Map.map.height do
+        for x = 1, Map.map.width do
+            -- Get Map.tileset tile
+            local idx = Map.map.layers[layer][(y - 1) * Map.map.width + x]
+            if idx ~= 0 then
+                local tile = Map.tileset[idx]
+                if tile == nil then
+                    print('['..prefix..Map.map.Map.tileset..'.lua] Bad tile: '..idx)
+                    return false
                 end
+                -- Add to the sprite batch
+                local quad = love.graphics.newQuad(tile.offset.x, tile.offset.y, Map.tileset.tileWidth, Map.tileset.tileHeight, Map.image:getWidth(), Map.image:getHeight())
+                Map.batch[layer]:addq(quad, (x - 1) * Map.tileset.tileWidth, (y - 1) * Map.tileset.tileHeight)
             end
         end
     end
-    return true
 end
 
 function Map.draw()
