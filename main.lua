@@ -25,12 +25,13 @@ function love.load()
 	end
 	brum.tick = 12
 	brum.animate = brum.sleep
-	Editor.init()
 
     if not Map.load("plains.lua") then
         print('Failed to load map')
         love.event.quit()
     end
+    
+    Editor.init()
 end
 
 function love.update()
