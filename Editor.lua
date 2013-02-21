@@ -1,35 +1,46 @@
---[[Map Editor]]
+------------------------------------------------
+-- Editor: Map Editor module
+------------------------------------------------
+-- Plug interface:
+-- love.update() -> Editor.update()
+-- love.draw() -> Editor.draw()
+-- love.mousepressed() -> Editor.mousePressed()
+------------------------------------------------
 
 Editor = {}
 
+-- Check if the tile cursor (The pointer to the current tile) is within the in bounds of map size
 local function TileCursorInBounds()
     return Editor.tx <= Map.map.width and Editor.ty <= Map.map.height
 end
 
+-- Convert a pixel coord to a tile coord
+-- e.g. 136,92 becomes 5, 3
 local function pixToTileCoord(x, y)
     return math.floor(x / 32) + 1, math.floor(y / 32) + 1
 end
 
 -- Tools
+-- Each tool has a name, icon offset, and a function
 local tools =
 {    
     {
         name = 'Eraser',
-        quadOffset = {0, 0},
+        iconOffset = {0, 0},
         exec = function()
             Editor.tile = 0
         end
     },
     {
         name = 'Reload',
-        quadOffset = {64, 0},
+        iconOffset = {64, 0},
         exec = function()
             Map.load(Map.filename)
         end
     },
     {
         name = 'Load',
-        quadOffset = {0, 32},
+        iconOffset = {0, 32},
         exec = function()
             -- Todo: This reads filename from stdin
             -- Can't be used without a console open
@@ -40,14 +51,14 @@ local tools =
     },
     {
         name = 'Save',
-        quadOffset = {96, 0},
+        iconOffset = {96, 0},
         exec = function()
             Map.saveToFile(Map.filename)
         end
     },
     {
         name = 'Save As',
-        quadOffset = {64, 32},
+        iconOffset = {64, 32},
         exec = function()
             -- Todo: This reads filename from stdin
             -- Can't be used without a console open
@@ -58,20 +69,20 @@ local tools =
     },
     {
         name = 'New (Not implemented)',
-        quadOffset = {96, 32},
+        iconOffset = {96, 32},
         exec = function()
         end
     },
     {
         name = 'Toggle fade inactive layers',
-        quadOffset = {32, 32},
+        iconOffset = {32, 32},
         exec = function()
             Editor.fadeInactiveLayers = not Editor.fadeInactiveLayers
         end
     },
     {
         name = 'Resize',
-        quadOffset = {32, 0},
+        iconOffset = {32, 0},
         exec = function()
             -- Todo: This reads the new size from stdin
             -- Can't be used without a console open
@@ -84,6 +95,8 @@ local tools =
     }
 }
 
+-- Initialize the state of the map editor
+-- This function assumes that the map is already loaded
 function Editor.init()
     Editor.layer = 1
     Editor.image = love.graphics.newImage('img/editor.png')
@@ -92,10 +105,12 @@ function Editor.init()
     love.graphics.setCaption(Map.filename)
     -- Create quads for the tools
     for t = 1, table.getn(tools) do
-        tools[t].quad = love.graphics.newQuad(tools[t].quadOffset[1], tools[t].quadOffset[2], 32, 32, Editor.image:getWidth(), Editor.image:getHeight())
+        tools[t].quad = love.graphics.newQuad(tools[t].iconOffset[1], tools[t].iconOffset[2], 32, 32, Editor.image:getWidth(), Editor.image:getHeight())
     end
 end
 
+-- Update the map editor
+-- Call this in love.update()
 function Editor.update()
     Editor.tx, Editor.ty = pixToTileCoord(love.mouse.getX(), love.mouse.getY())
     if love.mouse.isDown('l') and TileCursorInBounds() then
@@ -104,6 +119,8 @@ function Editor.update()
     end
 end
 
+-- Draw the map editor
+-- Call this in love.draw()
 function Editor.draw()
     -- Draw layers of map
     for l = 1, Map.map.layers.count do
@@ -166,6 +183,8 @@ function Editor.draw()
     end
 end
 
+-- Mouse event handler
+-- Call this in love.mousepressed
 function Editor.mousepressed(x, y, button)
     -- Layer select
     if x >= 800 - 32 then
@@ -186,8 +205,4 @@ function Editor.mousepressed(x, y, button)
             tools[tool].exec()
         end
     end
-end
-
-function Editor.save()
-    
 end
