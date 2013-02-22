@@ -96,6 +96,21 @@ function Map.resize(w, h)
     end
 end
 
+-- Add a layer
+function Map.addLayer()
+    Map.map.layers.count = Map.map.layers.count + 1
+    local l = Map.map.layers.count
+    Map.map.layers[l] = {}
+    Map.batch[l] = love.graphics.newSpriteBatch(Map.image)
+    Map.resize(Map.map.width, Map.map.height)
+end
+
+-- Remove layer l
+function Map.removeLayer(l)
+    table.remove(Map.map.layers, l)
+    Map.map.layers.count = Map.map.layers.count - 1
+end
+
 -- Draw the map
 function Map.draw()
     for l = 1, Map.map.layers.count do

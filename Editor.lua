@@ -245,12 +245,23 @@ function Editor.mousepressed(x, y, button)
         Editor.prevYOff = Editor.yOff
     end
     
-    -- Layer select
+    -- Layer select/add/remove
     if x >= 800 - 32 then
         local discard, ly
         discard, ly = pixToTileCoord(x, y)
-        if ly <= Map.map.layers.count then Editor.layer = ly end
+        if ly <= Map.map.layers.count then
+            if button == 'l' then
+                Editor.layer = ly
+            elseif button == 'r' and ly > Editor.layer then
+                Map.removeLayer(ly)
+                Editor.layerbarHeight = (Map.map.layers.count + 1) * 32
+            end
+        elseif ly == Map.map.layers.count + 1 then
+            Map.addLayer()
+            Editor.layerbarHeight = (Map.map.layers.count + 1) * 32
+        end
     end
+    
     -- Tile select
     if y >= 600 - 64 and y < 600 - 32 then
         Editor.tile = pixToTileCoord(x, y)
