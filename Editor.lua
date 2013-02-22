@@ -247,8 +247,9 @@ function Editor.mousepressed(x, y, button)
     
     -- Layer select
     if x >= 800 - 32 then
-        local discard
-        discard, Editor.layer = pixToTileCoord(x, y)
+        local discard, ly
+        discard, ly = pixToTileCoord(x, y)
+        if ly <= Map.map.layers.count then Editor.layer = ly end
     end
     -- Tile select
     if y >= 600 - 64 and y < 600 - 32 then
