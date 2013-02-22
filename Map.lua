@@ -1,4 +1,6 @@
---[[ A tile-based map ]]
+-----------------------
+-- Map: Tile based map
+-----------------------
 
 Map = {}
 
@@ -10,6 +12,8 @@ local function genQuads()
     end
 end
 
+-- Load the map from a map file
+-- It looks in maps/ for the map file
 function Map.load(filename)
     local path = 'maps/'..filename
     -- File validity check
@@ -40,6 +44,8 @@ end
 
 require('tabletostring')
 
+-- Save the map to a file
+-- It saves in maps/
 function Map.saveToFile(filename)
     local path = 'maps/'..filename
     love.filesystem.mkdir('maps')
@@ -48,6 +54,7 @@ function Map.saveToFile(filename)
     Map.filename = filename
 end
 
+-- Update the layer's LOVE tilebatch used to draw the map
 function Map.updateBatch(layer)
     Map.batch[layer]:clear()
     for y = 1, Map.map.height do
@@ -67,6 +74,7 @@ function Map.updateBatch(layer)
     end
 end
 
+-- Resize the map
 function Map.resize(w, h)
     local oldW = Map.map.width
     local oldH = Map.map.height
@@ -88,6 +96,7 @@ function Map.resize(w, h)
     end
 end
 
+-- Draw the map
 function Map.draw()
     for l = 1, Map.map.layers.count do
         love.graphics.draw(Map.batch[l])
