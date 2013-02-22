@@ -104,13 +104,16 @@ function Editor.init()
     Editor.tile = 1
     Editor.fadeInactiveLayers = false
     love.graphics.setCaption(Map.filename)
+    
+    Editor.newLayerQuad = love.graphics.newQuad(0, 64, 32, 32, Editor.image:getWidth(), Editor.image:getHeight())
+    
     -- Create quads for the tools
     for t = 1, table.getn(tools) do
         tools[t].quad = love.graphics.newQuad(tools[t].iconOffset[1], tools[t].iconOffset[2], 32, 32, Editor.image:getWidth(), Editor.image:getHeight())
     end
     
     Editor.toolbarWidth = table.getn(tools) * 32
-    Editor.layerbarHeight = Map.map.layers.count * 32
+    Editor.layerbarHeight = (Map.map.layers.count + 1) * 32
     Editor.tx = 0
     Editor.ty = 0
     Editor.xOff = 0
@@ -204,6 +207,7 @@ function Editor.draw()
         love.graphics.rectangle('line', 800 - 32, (l - 1) * 32, 32, 32)
         love.graphics.print(l, 800 - 20, ((l - 1) * 32) + 9)
     end
+    love.graphics.drawq(Editor.image, Editor.newLayerQuad, 800 - 32, Map.map.layers.count * 32)
     -- Draw buttons for tools
     for t = 1, table.getn(tools) do
         love.graphics.drawq(Editor.image, tools[t].quad, (t - 1) * 32, 600 - 32)
