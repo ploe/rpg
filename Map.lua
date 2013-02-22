@@ -102,3 +102,14 @@ function Map.draw()
         love.graphics.draw(Map.batch[l])
     end
 end
+
+-- Get info about the tile at (layer, x, y)
+function Map.tileInfo(layer, x, y)
+    return Map.tileset[Map.map.layers[layer][y][x]]
+end
+
+-- Check if a tile is solid at (layer, x, y)
+function Map.isSolid(layer, x, y)
+    local info = Map.tileInfo(layer, x, y)
+    if info and info.solid then return true else return false end
+end
