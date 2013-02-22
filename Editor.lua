@@ -4,7 +4,8 @@
 -- Plug interface:
 -- love.update() -> Editor.update()
 -- love.draw() -> Editor.draw()
--- love.mousepressed() -> Editor.mousePressed()
+-- love.mousepressed() -> Editor.mousepressed()
+-- love.mousereleased() -> Editor.mousereleased()
 ------------------------------------------------
 
 Editor = {}
@@ -112,6 +113,9 @@ function Editor.init()
     Editor.layerbarHeight = Map.map.layers.count * 32
     Editor.tx = 0
     Editor.ty = 0
+    Editor.xOff = 0
+    Editor.yOff = 0
+    Editor.scrolling = false
 end
 
 local function inRect(x, y, rx, ry, rw, rh)
@@ -130,9 +134,15 @@ function Editor.update()
     local mx = love.mouse.getX()
     local my = love.mouse.getY()
     
+    -- Update offset if scrolling
+    if Editor.scrolling then
+        Editor.xOff = Editor.prevXOff + (Editor.scrollOrigX - mx)
+        Editor.yOff = Editor.prevYOff + (Editor.scrollOrigY - my)
+    end
+    
     -- Update tile cursor
     if not mouseOnUI() then
-        Editor.tx, Editor.ty = pixToTileCoord(love.mouse.getX(), love.mouse.getY())
+        Editor.tx, Editor.ty = pixToTileCoord(love.mouse.getX() - Editor.xOff, love.mouse.getY() - Editor.yOff)
         if love.mouse.isDown('l') and TileCursorInBounds() then
             Map.map.layers[Editor.layer][Editor.ty][Editor.tx] = Editor.tile
             Map.updateBatch(Editor.layer)
@@ -144,6 +154,8 @@ end
 -- Call this in love.draw()
 function Editor.draw()
     -- Draw layers of map
+    love.graphics.push()
+    love.graphics.translate(Editor.xOff, Editor.yOff)
     for l = 1, Map.map.layers.count do
         if l ~= Editor.layer and Editor.fadeInactiveLayers then
             love.graphics.setColor(255, 255, 255, 128)
@@ -161,6 +173,7 @@ function Editor.draw()
     love.graphics.setColor(255, 0, 0)
     love.graphics.rectangle('line', 0, 0, Map.map.width * 32, Map.map.height * 32)
     love.graphics.setColor(255, 255, 255)
+    love.graphics.pop()
     -- Draw rect for bottom bar
     love.graphics.setColor(0, 0, 0, 128)
     love.graphics.rectangle('fill', 0, 600 - 64, Editor.toolbarWidth, 64)
@@ -219,6 +232,16 @@ end
 -- Mouse event handler
 -- Call this in love.mousepressed
 function Editor.mousepressed(x, y, button)
+    
+    -- Scroll with right mouse button
+    if button == 'r' then
+        Editor.scrolling = true
+        Editor.scrollOrigX = x
+        Editor.scrollOrigY = y
+        Editor.prevXOff = Editor.xOff
+        Editor.prevYOff = Editor.yOff
+    end
+    
     -- Layer select
     if x >= 800 - 32 then
         local discard
@@ -237,5 +260,13 @@ function Editor.mousepressed(x, y, button)
         if tool <= table.getn(tools) then
             tools[tool].exec()
         end
+    end
+end
+
+-- Mouse release event handler
+-- Call this in love.mousereleased
+function Editor.mousereleased(x, y, button)
+    if button == 'r' then
+        Editor.scrolling = false
     end
 end

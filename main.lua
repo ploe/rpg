@@ -43,6 +43,10 @@ function love.mousepressed(x, y, button)
 	Editor.mousepressed(x, y, button)
 end
 
+function love.mousereleased(x, y, button)
+	Editor.mousereleased(x, y, button)
+end
+
 function love.draw()
 	love.graphics.setCaption("Baggage Reclaim Man - Gotta LOVE lime")
 	Editor.draw()
