@@ -131,17 +131,17 @@ end
 -- Update the map editor
 -- Call this in love.update()
 function Editor.update()
-    local mx = love.mouse.getX()
-    local my = love.mouse.getY()
-    
-    -- Update offset if scrolling
-    if Editor.scrolling then
-        Editor.xOff = Editor.prevXOff + (Editor.scrollOrigX - mx)
-        Editor.yOff = Editor.prevYOff + (Editor.scrollOrigY - my)
-    end
-    
-    -- Update tile cursor
     if not mouseOnUI() then
+        local mx = love.mouse.getX()
+        local my = love.mouse.getY()
+        
+        -- Update offset if scrolling
+        if Editor.scrolling then
+            Editor.xOff = Editor.prevXOff + (Editor.scrollOrigX - mx)
+            Editor.yOff = Editor.prevYOff + (Editor.scrollOrigY - my)
+        end
+        
+        -- Update tile cursor
         Editor.tx, Editor.ty = pixToTileCoord(love.mouse.getX() - Editor.xOff, love.mouse.getY() - Editor.yOff)
         if love.mouse.isDown('l') and TileCursorInBounds() then
             Map.map.layers[Editor.layer][Editor.ty][Editor.tx] = Editor.tile
