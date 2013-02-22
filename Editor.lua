@@ -12,7 +12,7 @@ Editor = {}
 
 -- Check if the tile cursor (The pointer to the current tile) is within the in bounds of map size
 local function TileCursorInBounds()
-    return Editor.tx <= Map.map.width and Editor.ty <= Map.map.height
+    return Editor.tx <= Map.map.width and Editor.tx > 0 and Editor.ty <= Map.map.height and Editor.ty > 0
 end
 
 -- Convert a pixel coord to a tile coord
