@@ -96,9 +96,35 @@ function Map.resize(w, h)
     end
 end
 
+-- Add a layer
+function Map.addLayer()
+    Map.map.layers.count = Map.map.layers.count + 1
+    local l = Map.map.layers.count
+    Map.map.layers[l] = {}
+    Map.batch[l] = love.graphics.newSpriteBatch(Map.image)
+    Map.resize(Map.map.width, Map.map.height)
+end
+
+-- Remove layer l
+function Map.removeLayer(l)
+    table.remove(Map.map.layers, l)
+    Map.map.layers.count = Map.map.layers.count - 1
+end
+
 -- Draw the map
 function Map.draw()
     for l = 1, Map.map.layers.count do
         love.graphics.draw(Map.batch[l])
     end
+end
+
+-- Get info about the tile at (layer, x, y)
+function Map.tileInfo(layer, x, y)
+    return Map.tileset[Map.map.layers[layer][y][x]]
+end
+
+-- Check if a tile is solid at (layer, x, y)
+function Map.isSolid(layer, x, y)
+    local info = Map.tileInfo(layer, x, y)
+    if info and info.solid then return true else return false end
 end
