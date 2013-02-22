@@ -264,9 +264,9 @@ function Editor.mousepressed(x, y, button)
     
     -- Tile select
     if y >= 600 - 64 and y < 600 - 32 then
-        Editor.tile = pixToTileCoord(x, y)
-        if Editor.tile > table.getn(Map.tileset) then
-            Editor.tile = table.getn(Map.tileset)
+        local tx = pixToTileCoord(x, y)
+        if tx <= table.getn(Map.tileset) then
+            Editor.tile = tx
         end
     end
     -- Tool select
