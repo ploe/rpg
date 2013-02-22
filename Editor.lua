@@ -107,6 +107,9 @@ function Editor.init()
     for t = 1, table.getn(tools) do
         tools[t].quad = love.graphics.newQuad(tools[t].iconOffset[1], tools[t].iconOffset[2], 32, 32, Editor.image:getWidth(), Editor.image:getHeight())
     end
+    
+    Editor.toolbarWidth = table.getn(tools) * 32
+    Editor.layerbarHeight = Map.map.layers.count * 32
 end
 
 -- Update the map editor
@@ -140,6 +143,10 @@ function Editor.draw()
     love.graphics.setColor(255, 0, 0)
     love.graphics.rectangle('line', 0, 0, Map.map.width * 32, Map.map.height * 32)
     love.graphics.setColor(255, 255, 255)
+    -- Draw rect for bottom bar
+    love.graphics.setColor(0, 0, 0, 128)
+    love.graphics.rectangle('fill', 0, 600 - 64, Editor.toolbarWidth, 64)
+    love.graphics.setColor(255, 255, 255)
     -- Draw available tiles in tileset
     for i = 1, table.getn(Map.tileset) do
         love.graphics.drawq(Map.image, Map.tileset[i].quad, (i - 1) * 32, 600 - 64)
@@ -152,11 +159,19 @@ function Editor.draw()
         love.graphics.rectangle('fill', (Editor.tile - 1) * 32, 600 - 64, 32, 32)
     end
     love.graphics.setColor(255, 255, 255)
+    -- Draw rect for layer bar
+    love.graphics.setColor(0, 0, 0, 128)
+    love.graphics.rectangle('fill', 800 - 32, 0, 32, Editor.layerbarHeight)
+    love.graphics.setColor(255, 255, 255)
     -- Draw buttons for layer selection
     for l = 1, Map.map.layers.count do
-        method = 'line'
-        if l == Editor.layer then method = 'fill' end
-        love.graphics.rectangle(method, 800 - 32, (l - 1) * 32, 32, 32)
+        if l == Editor.layer then
+            love.graphics.setColor(128, 255, 128, 128)
+            love.graphics.rectangle('fill', 800 - 32, (l - 1) * 32, 32, 32)
+            love.graphics.setColor(255, 255, 255)
+        end
+        love.graphics.rectangle('line', 800 - 32, (l - 1) * 32, 32, 32)
+        love.graphics.print(l, 800 - 20, ((l - 1) * 32) + 9)
     end
     -- Draw buttons for tools
     for t = 1, table.getn(tools) do
