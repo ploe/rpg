@@ -89,7 +89,7 @@ function Editor.init()
     Editor.image = love.graphics.newImage('img/editor.png')
     Editor.tile = 1
     Editor.fadeInactiveLayers = false
-    love.graphics.setCaption(Map.filename)
+    love.graphics.setCaption(Map.filename or "Editor Mode")
     -- Create quads for the tools
     for t = 1, table.getn(tools) do
         tools[t].quad = love.graphics.newQuad(tools[t].quadOffset[1], tools[t].quadOffset[2], 32, 32, Editor.image:getWidth(), Editor.image:getHeight())
@@ -175,6 +175,7 @@ function Editor.mousepressed(x, y, button)
     -- Tile select
     if y >= 600 - 64 and y < 600 - 32 then
         Editor.tile = pixToTileCoord(x, y)
+	print("LOL")
         if Editor.tile > table.getn(Map.tileset) then
             Editor.tile = table.getn(Map.tileset)
         end
