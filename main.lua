@@ -3,7 +3,9 @@ require("Action")
 require('Map')
 require('Editor')
 
--- Message passing interface, so one callback process can communicate with the rest, the stack is purged every frame
+Player = Actor.new()
+Player:loadCostume("img/Ayne_Moosader.png", 32, 48)
+Player.x = 0; Player.y = 32
 
 function love.load()
 	JIFFY = 1/30
@@ -25,11 +27,12 @@ function love.load()
 	end
 	brum.tick = 12
 	brum.animate = brum.sleep
-
-    if not Map.load("plains.lua") then
-        print('Failed to load map')
-        love.event.quit()
-    end
+	Editor.init()
+	--Action:push(Player)
+	if not Map.load("plains.lua") then
+		print('Failed to load map')
+		love.event.quit()
+    	end
     
     Editor.init()
 end
@@ -51,7 +54,7 @@ function love.draw()
 	love.graphics.setCaption("Baggage Reclaim Man - Gotta LOVE lime")
 	Editor.draw()
 	Action:update()
-	brum:updateClip()
+	Actor.draw()
 	if love.timer.getMicroTime() <= start + JIFFY then love.timer.sleep(start + JIFFY - love.timer.getMicroTime()) end
 	Signal = {}
 end

@@ -103,10 +103,9 @@ function Editor.init()
     Editor.image = love.graphics.newImage('img/editor.png')
     Editor.tile = 1
     Editor.fadeInactiveLayers = false
-    love.graphics.setCaption(Map.filename)
-    
+    love.graphics.setCaption(Map.filename or "Editor Mode")
     Editor.newLayerQuad = love.graphics.newQuad(0, 64, 32, 32, Editor.image:getWidth(), Editor.image:getHeight())
-    
+
     -- Create quads for the tools
     for t = 1, table.getn(tools) do
         tools[t].quad = love.graphics.newQuad(tools[t].iconOffset[1], tools[t].iconOffset[2], 32, 32, Editor.image:getWidth(), Editor.image:getHeight())

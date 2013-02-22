@@ -1,11 +1,12 @@
 --[[ An Actor is the basic Sprite type ]]
 
 local Actor_prototype = {
-	x = 0, y = 0, h = 0, w = 0,					-- offset dimensions
-	costume,									-- image, spritesheet
-	clip = { x = 0, y = 0, w = 0, h = 0 },		-- quad dimenstions
+	x = 0, y = 0, h = 0, w = 0,		-- offset dimensions
+	costume,				-- image, spritesheet
+						-- quad dimenstions
 	scale = 1,
-	aura										-- bounding box
+	aura,
+	tick = 0				-- bounding box
 }
 
 local mt = {}
@@ -61,21 +62,43 @@ end
 
 --[[	The updateClip method is called every frame for every Actor on the stack ]]
 
-function Actor_prototype:updateClip()
+function Actor_prototype:draw()
+	-- print(self)
+	-- print(table.tostring(self))
 	self.tick = self.tick - 1
 	if self.animate then self:animate() end
+	-- print(Player.x.."/"..Player.y)
+	-- print("clip: " .. Player.clip.x .. "/" .. Player.clip.y .. "/" .. Player.clip.w .. "/" .. Player.clip.h)
+
 	updateViewport(self)
 	love.graphics.drawq(self.costume, self.quad, self.x, self.y)
 end
 
 --[[ lib is the public interface for the Actor module ]]
 
+local stack = {}
+
 local lib = {}
 
 function lib.new(tag)
 	a = {tag = tag}
+	table.insert(stack, a)
+	a.clip = {x = 0, y = 0, w = 0, h = 0}
 	setmetatable(a, mt)
+	print(table.tostring(a))
 	return a
+end
+
+function lib.update()
+	for k, v in ipairs(stack) do 
+		if v.update then v:update() end
+	end
+end
+
+function lib.draw()
+	for k, v in ipairs(stack) do 
+		if v.draw then v:draw() end
+	end
 end
 
 return lib
