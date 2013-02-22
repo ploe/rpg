@@ -110,15 +110,33 @@ function Editor.init()
     
     Editor.toolbarWidth = table.getn(tools) * 32
     Editor.layerbarHeight = Map.map.layers.count * 32
+    Editor.tx = 0
+    Editor.ty = 0
+end
+
+local function inRect(x, y, rx, ry, rw, rh)
+    return x >= rx and y >= ry and x <= rx + rw and y <= ry + rh
+end
+
+local function mouseOnUI()
+    local mx = love.mouse.getX()
+    local my = love.mouse.getY()
+    return inRect(mx, my, 800 - 32, 0, 32, Editor.layerbarHeight) or inRect(mx, my, 0, 600 - 64, Editor.toolbarWidth, 64)
 end
 
 -- Update the map editor
 -- Call this in love.update()
 function Editor.update()
-    Editor.tx, Editor.ty = pixToTileCoord(love.mouse.getX(), love.mouse.getY())
-    if love.mouse.isDown('l') and TileCursorInBounds() then
-        Map.map.layers[Editor.layer][Editor.ty][Editor.tx] = Editor.tile
-        Map.updateBatch(Editor.layer)
+    local mx = love.mouse.getX()
+    local my = love.mouse.getY()
+    
+    -- Update tile cursor
+    if not mouseOnUI() then
+        Editor.tx, Editor.ty = pixToTileCoord(love.mouse.getX(), love.mouse.getY())
+        if love.mouse.isDown('l') and TileCursorInBounds() then
+            Map.map.layers[Editor.layer][Editor.ty][Editor.tx] = Editor.tile
+            Map.updateBatch(Editor.layer)
+        end
     end
 end
 
