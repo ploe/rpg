@@ -27,7 +27,6 @@ function love.load()
 	end
 	brum.tick = 12
 	brum.animate = brum.sleep
-	Editor.init()
 	--Action:push(Player)
 	if not Map.load("plains.lua") then
 		print('Failed to load map')
