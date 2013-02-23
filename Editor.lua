@@ -37,6 +37,7 @@ local tools =
         iconOffset = {64, 0},
         exec = function()
             Map.load(Map.filename)
+            Editor.init()
         end
     },
     {
