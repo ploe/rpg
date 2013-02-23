@@ -21,16 +21,54 @@ local function pixToTileCoord(x, y)
     return math.floor(x / 32) + 1, math.floor(y / 32) + 1
 end
 
--- Tools
--- Each tool has a name, icon offset, and a function
+------------------------------------------------
+-- Tools for the editor
+------------------------------------------------
+-- Mandatory members:
+-- name: Name of the tool
+-- iconOffset: Offset of its icon in editor.png
+-- exec: Function to execute when tool is used
+------------------------------------------------
+-- Optional members:
+-- selectable: Tool is selectable
+-- brush: Tool can be applied as a brush
 local tools =
 {    
+    {
+        name = 'Tile Stamp',
+        iconOffset = {64, 64},
+        exec = function()
+            Map.map.layers[Editor.layer][Editor.ty][Editor.tx] = Editor.tile
+            Map.updateBatch(Editor.layer)
+        end,
+        selectable = true,
+        brush = true
+    },
     {
         name = 'Eraser',
         iconOffset = {0, 0},
         exec = function()
-            Editor.tile = 0
-        end
+            Map.map.layers[Editor.layer][Editor.ty][Editor.tx] = 0
+            Map.updateBatch(Editor.layer)
+        end,
+        selectable = true,
+        brush = true
+    },
+    {
+        name = 'Bucket Fill',
+        iconOffset = {32, 64},
+        exec = function(x, y)
+            local tiles = Map.map.layers[Editor.layer]
+            
+            for yy = y, Map.map.height do
+                for xx = x, Map.map.width do
+                    tiles[yy][xx] = Editor.tile
+                end
+            end
+            
+            Map.updateBatch(Editor.layer)
+        end,
+        selectable = true
     },
     {
         name = 'Reload',
@@ -119,6 +157,7 @@ function Editor.init()
     Editor.xOff = 0
     Editor.yOff = 0
     Editor.scrolling = false
+    Editor.tool = 1
 end
 
 local function inRect(x, y, rx, ry, rw, rh)
@@ -146,9 +185,11 @@ function Editor.update()
         
         -- Update tile cursor
         Editor.tx, Editor.ty = pixToTileCoord(love.mouse.getX() - Editor.xOff, love.mouse.getY() - Editor.yOff)
+        
+        -- Apply brushtool to map
         if love.mouse.isDown('l') and TileCursorInBounds() then
-            Map.map.layers[Editor.layer][Editor.ty][Editor.tx] = Editor.tile
-            Map.updateBatch(Editor.layer)
+            local t = tools[Editor.tool]
+            if t.brush then t.exec(tx, ty) end
         end
     end
 end
@@ -185,14 +226,6 @@ function Editor.draw()
     for i = 1, table.getn(Map.tileset) do
         love.graphics.drawq(Map.image, Map.tileset[i].quad, (i - 1) * 32, 600 - 64)
     end
-    -- Highlight selected tile
-    love.graphics.setColor(255, 255, 255, 128)
-    if Editor.tile == 0 then
-        love.graphics.rectangle('fill', 0, 600 - 32, 32, 32)
-    else
-        love.graphics.rectangle('fill', (Editor.tile - 1) * 32, 600 - 64, 32, 32)
-    end
-    love.graphics.setColor(255, 255, 255)
     -- Draw rect for layer bar
     love.graphics.setColor(0, 0, 0, 128)
     love.graphics.rectangle('fill', 800 - 32, 0, 32, Editor.layerbarHeight)
@@ -212,6 +245,13 @@ function Editor.draw()
     for t = 1, table.getn(tools) do
         love.graphics.drawq(Editor.image, tools[t].quad, (t - 1) * 32, 600 - 32)
     end
+    -- Highlight selected tile and tool
+    love.graphics.setColor(255, 255, 255, 128)
+    if Editor.tool then
+        love.graphics.rectangle('fill', (Editor.tool - 1) * 32, 600 - 32, 32, 32)
+    end
+    love.graphics.rectangle('fill', (Editor.tile - 1) * 32, 600 - 64, 32, 32)
+    love.graphics.setColor(255, 255, 255)
     -- Draw overlay info for
     local mx = love.mouse.getX()
     local my = love.mouse.getY()
@@ -236,7 +276,11 @@ end
 -- Mouse event handler
 -- Call this in love.mousepressed
 function Editor.mousepressed(x, y, button)
-    
+    -- Apply non-brush tool to map
+    if not mouseOnUI() and button == 'l' then
+        local t = tools[Editor.tool]
+        if not t.brush then t.exec(pixToTileCoord(x - Editor.xOff, y - Editor.yOff)) end
+    end
     -- Scroll with right mouse button
     if button == 'r' then
         Editor.scrolling = true
@@ -270,11 +314,16 @@ function Editor.mousepressed(x, y, button)
             Editor.tile = tx
         end
     end
-    -- Tool select
+    
+    -- Tool select/execute
     if y >= 600 -32 then
         local tool = pixToTileCoord(x, y)
         if tool <= table.getn(tools) then
-            tools[tool].exec()
+            if tools[tool].selectable then
+                Editor.tool = tool
+            else
+                tools[tool].exec()
+            end
         end
     end
 end
