@@ -6,6 +6,7 @@ require('Editor')
 Player = Actor.new()
 Player:loadCostume("img/Ayne_Moosader.png", 32, 48)
 Player.x = 0; Player.y = 12
+Player.grid = {x = 0, y = 0}
 
 function Player:walk()
 	if not self.tick or self.tick <= 0 then 
@@ -13,7 +14,6 @@ function Player:walk()
 	end 
 	if self.tick == 4 or self.tick == 1 then self:nextClip()
 	elseif self.tick == 2 or self.tick == 3 then self:prevClip() end
-	print(self.tick)
 end
 
 function Player:listen()
@@ -21,20 +21,26 @@ function Player:listen()
 	if Signal["left pressed"] then 
 		self.vector.x = -8
 		self:jumpReel(2)
+		self.grid.x = self.grid.x - 1
 	elseif Signal["right pressed"] then 
 		self.vector.x = 8
 		self:jumpReel(3)
+		self.grid.x = self.grid.x + 1
 	end
 
 	if Signal["up pressed"] then 
 		self.vector.y = -8
 		self:jumpReel(1)
+		self.grid.y = self.grid.y - 1
 	elseif Signal["down pressed"] then 
 		self.vector.y = 8 
 		self:jumpReel(0)
+		self.grid.y = self.grid.y + 1
 	end
 
-	local step = 4	--lexical scoping, bitch ;) Essentially like a private variable for the walking
+	print(Map.isSolid(1,self.grid.x, self.grid.y))
+
+	local step = 4	-- lexical scoping, bitch ;) Essentially like a private variable for the walking
 	if self.vector.x and self.vector.y then
 		self.vector.x = self.vector.x / 2
 		self.vector.y = self.vector.y / 2
@@ -49,7 +55,7 @@ function Player:listen()
 			step = step - 1
 			if step == 0 then Player.update = Player.listen end
 		end
-		Player:update()
+		Player:update()	-- call once so we don't get that dodgy skipping effect when the button is held down
 	else
 		self.tick = 0
 		self.animate = nil

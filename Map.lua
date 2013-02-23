@@ -118,9 +118,13 @@ function Map.draw()
     end
 end
 
--- Get info about the tile at (layer, x, y)
-function Map.tileInfo(layer, x, y)
-    return Map.tileset[Map.map.layers[layer][y][x]]
+-- Get info about the tile at (l, x, y)
+function Map.tileInfo(l, x, y)
+	print(l.." "..x.." ".." "..y)
+	print(Map.tileset)
+	print(Map.map.layers)
+	print(Map.map.layers[l])
+    return Map.tileset[Map.map.layers[l][y][x]]
 end
 
 -- Check if a tile is solid at (layer, x, y)
