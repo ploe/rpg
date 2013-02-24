@@ -154,8 +154,6 @@ function Editor.init()
     Editor.layerbarHeight = (Map.map.layers.count + 1) * 32
     Editor.tx = 0
     Editor.ty = 0
-    Editor.xOff = 0
-    Editor.yOff = 0
     Editor.scrolling = false
     Editor.tool = 1
 end
@@ -179,12 +177,12 @@ function Editor.update()
         
         -- Update offset if scrolling
         if Editor.scrolling then
-            Editor.xOff = Editor.prevXOff + (Editor.scrollOrigX - mx)
-            Editor.yOff = Editor.prevYOff + (Editor.scrollOrigY - my)
+            xOff = Editor.prevXOff + (Editor.scrollOrigX - mx)
+            yOff = Editor.prevYOff + (Editor.scrollOrigY - my)
         end
         
         -- Update tile cursor
-        Editor.tx, Editor.ty = pixToTileCoord(love.mouse.getX() - Editor.xOff, love.mouse.getY() - Editor.yOff)
+        Editor.tx, Editor.ty = pixToTileCoord(love.mouse.getX() - xOff, love.mouse.getY() - yOff)
         
         -- Apply brushtool to map
         if love.mouse.isDown('l') and TileCursorInBounds() then
@@ -196,10 +194,8 @@ end
 
 -- Draw the map editor
 -- Call this in love.draw()
-function Editor.draw()
+function Editor.drawMap()
     -- Draw layers of map
-    love.graphics.push()
-    love.graphics.translate(Editor.xOff, Editor.yOff)
     for l = 1, Map.map.layers.count do
         if l ~= Editor.layer and Editor.fadeInactiveLayers then
             love.graphics.setColor(255, 255, 255, 128)
@@ -217,8 +213,10 @@ function Editor.draw()
     love.graphics.setColor(255, 0, 0)
     love.graphics.rectangle('line', 0, 0, Map.map.width * 32, Map.map.height * 32)
     love.graphics.setColor(255, 255, 255)
-    love.graphics.pop()
-    -- Draw rect for bottom bar
+end
+
+function Editor.drawUI()
+-- Draw rect for bottom bar
     love.graphics.setColor(0, 0, 0, 128)
     love.graphics.rectangle('fill', 0, 600 - 64, Editor.toolbarWidth, 64)
     love.graphics.setColor(255, 255, 255)
@@ -286,8 +284,8 @@ function Editor.mousepressed(x, y, button)
         Editor.scrolling = true
         Editor.scrollOrigX = x
         Editor.scrollOrigY = y
-        Editor.prevXOff = Editor.xOff
-        Editor.prevYOff = Editor.yOff
+        Editor.prevXOff = xOff
+        Editor.prevYOff = yOff
     end
     
     -- Layer select/add/remove

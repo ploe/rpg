@@ -4,6 +4,10 @@ require('Map')
 require('Editor')
 require('Player')
 
+-- Camera offset
+xOff = 0
+yOff = 0
+
 function love.load()
 	JIFFY = 1/30
 	Action:push(Player)
@@ -35,10 +39,13 @@ function love.mousereleased(x, y, button)
 end
 
 function love.draw()
-	love.graphics.setCaption("Baggage Reclaim Man - Gotta LOVE lime")
-	Editor.draw()
+	love.graphics.push()
+	love.graphics.translate(xOff, yOff)
+	Editor.drawMap()
 	Action:update()
 	Actor.draw()
+	love.graphics.pop()
+	Editor.drawUI()
 	if love.timer.getMicroTime() <= start + JIFFY then love.timer.sleep(start + JIFFY - love.timer.getMicroTime()) end
 	Signal = {}
 end
