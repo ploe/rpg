@@ -38,8 +38,15 @@ function love.mousereleased(x, y, button)
 	Editor.mousereleased(x, y, button)
 end
 
+-- A thing centered should be on 400, 300
+function centerCamera(x, y)
+	xOff = 400 - x
+	yOff = 300 - y
+end
+
 function love.draw()
 	love.graphics.push()
+	centerCamera(Player.x + 16, Player.y + 24)
 	love.graphics.translate(xOff, yOff)
 	Editor.drawMap()
 	Action:update()
