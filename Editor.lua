@@ -194,6 +194,20 @@ end
 
 -- Draw the map editor
 -- Call this in love.draw()
+function Editor.draw()
+    love.graphics.push()
+    love.graphics.translate(xOff, yOff)
+    Editor.drawMap()
+    love.graphics.pop()
+    Editor.drawUI()
+end
+
+function Editor.keypressed(key, unicode)
+    if key == 'return' and love.keyboard.isDown('lctrl') then
+	currentState = Game
+    end
+end
+
 function Editor.drawMap()
     -- Draw layers of map
     for l = 1, Map.map.layers.count do

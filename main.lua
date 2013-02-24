@@ -3,6 +3,7 @@ require("Action")
 require('Map')
 require('Editor')
 require('Player')
+require('Game')
 
 -- Camera offset
 xOff = 0
@@ -17,55 +18,31 @@ function love.load()
     	end
     
     Editor.init()
+    currentState = Game
 end
 
 function love.update()
 	start = love.timer.getMicroTime()
-	Editor.update()
+	if currentState.update then currentState.update() end
 end
 
 function love.keypressed(key, unicode)
 	if key == 'return' and love.keyboard.isDown('lalt') then
 		love.graphics.toggleFullscreen()
 	end
+	if currentState.keypressed then currentState.keypressed(key, unicode) end
 end
 
 function love.mousepressed(x, y, button)
-	Editor.mousepressed(x, y, button)
+	if currentState.mousepressed then currentState.mousepressed(x, y, button) end
 end
 
 function love.mousereleased(x, y, button)
-	Editor.mousereleased(x, y, button)
-end
-
--- A thing centered should be on 400, 300
-function centerCamera(x, y)
-	xOff = 400 - x
-	yOff = 300 - y
-end
-
-function clamp(v, mi, ma)
-	if v < mi then v = mi end
-	if v > ma then v = ma end
-	return v
-end
-
--- Clamp camera to map edges
-function clampCamera()
-	xOff = clamp(xOff, -(Map.map.width - 25) * 32 , 0)
-	yOff = clamp(yOff, -(Map.map.height - 19) * 32, 0)
+	if currentState.mousereleased then currentState.mousereleased(x, y, button) end
 end
 
 function love.draw()
-	love.graphics.push()
-	centerCamera(Player.x + 16, Player.y + 24)
-	clampCamera()
-	love.graphics.translate(xOff, yOff)
-	Editor.drawMap()
-	Action:update()
-	Actor.draw()
-	love.graphics.pop()
-	Editor.drawUI()
+	if currentState.draw then currentState.draw() end
 	if love.timer.getMicroTime() <= start + JIFFY then love.timer.sleep(start + JIFFY - love.timer.getMicroTime()) end
 	Signal = {}
 end
