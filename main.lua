@@ -29,7 +29,7 @@ function love.mousereleased(x, y, button)
 end
 
 function love.draw()
-	love.graphics.setCaption("Baggage Reclaim Man - Gotta LOVE lime")
+	love.graphics.setCaption("An RPG in Nine Days?")
 	Editor.draw()
 	Action:update()
 	Actor.draw()

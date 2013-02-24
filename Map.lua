@@ -120,7 +120,8 @@ end
 
 -- Get info about the tile at (layer, x, y)
 function Map.tileInfo(layer, x, y)
-    return Map.tileset[Map.map.layers[layer][y][x]]
+	if layer > 0 and  x > 0 and y > 0 then return Map.tileset[Map.map.layers[layer][y][x]] end
+	return nil
 end
 
 -- Check if a tile is solid at (layer, x, y)

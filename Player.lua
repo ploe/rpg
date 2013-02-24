@@ -5,10 +5,10 @@ Player.grid = {x = 1, y = 1}
 
 function Player:walk()
 	if not self.tick or self.tick <= 0 then 
-		self.tick = 4
+		self.tick = 8
 	end 
-	if self.tick == 4 or self.tick == 1 then self:nextClip()
-	elseif self.tick == 2 or self.tick == 3 then self:prevClip() end
+	if self.tick == 8 or self.tick == 2 then self:nextClip()
+	elseif self.tick == 4 or self.tick == 6 then self:prevClip() end
 end
 
 local function stopPlayer(self)
@@ -17,7 +17,13 @@ local function stopPlayer(self)
 	self:jumpClip(1)
 end
 
-local function  movePlayer(self, x, y)	
+local function absoluteOffset(x, y)			-- why won't this work?
+	local t = Map.tileInfo(1, x, y)
+	return t.quad:getViewport()
+end
+
+local function  movePlayer(self, x, y)
+	self.grid.x = x; self.grid.y = y
 	local step = 4					-- lexical scoping, bitch ;) Essentially like a private variable for the walking
 	if self.vector.x and self.vector.y then
 		self.vector.x = self.vector.x / 2	-- half the vector speed for diagonal movement
@@ -26,13 +32,15 @@ local function  movePlayer(self, x, y)
 	end
 
 	if self.vector.x or self.vector.y then
-		self.grid.x = x; self.grid.y = y
+		print(x.." "..y)
 		self.animate = self.walk
 		self.update = function (self)
 			if self.vector.x then self.x = self.x + self.vector.x end
 			if self.vector.y then self.y = self.y + self.vector.y end
 			step = step - 1
-			if step == 0 then self.update = self.listen end
+			if step == 0 then
+				self.update = self.listen 
+			end
 		end
 		self:update()				-- call once so we don't get that dodgy skipping effect when the button is held down
 		return
@@ -66,7 +74,8 @@ function Player:listen()
 
 	
 	if Map.isSolid(1, x, y) or Map.isSolid(2, x, y) then stopPlayer(self)
-	else movePlayer(self, x, y) end
+	else movePlayer(self, x, y) print(Map.tileInfo(1, x, y))
+	end
 end
 
 Player.update = Player.listen
