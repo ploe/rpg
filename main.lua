@@ -20,6 +20,12 @@ function love.update()
 	Editor.update()
 end
 
+function love.keypressed(key, unicode)
+	if key == 'return' and love.keyboard.isDown('lalt') then
+		love.graphics.toggleFullscreen()
+	end
+end
+
 function love.mousepressed(x, y, button)
 	Editor.mousepressed(x, y, button)
 end
