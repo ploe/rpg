@@ -52,9 +52,7 @@ function Player:listen()
 		self.vector.x = 8
 		self:jumpReel(3)
 		x = x + 1
-	end
-
-	if Signal["up pressed"] then 
+	elseif Signal["up pressed"] then 
 		self.vector.y = -8
 		self:jumpReel(1)
 		y = y - 1
