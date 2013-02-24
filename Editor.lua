@@ -277,7 +277,7 @@ function Editor.mousepressed(x, y, button)
     -- Apply non-brush tool to map
     if not mouseOnUI() and button == 'l' then
         local t = tools[Editor.tool]
-        if not t.brush then t.exec(pixToTileCoord(x - Editor.xOff, y - Editor.yOff)) end
+        if not t.brush then t.exec(pixToTileCoord(x - xOff, y - yOff)) end
     end
     -- Scroll with right mouse button
     if button == 'r' then
