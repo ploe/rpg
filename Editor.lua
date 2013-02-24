@@ -150,7 +150,7 @@ function Editor.init()
         tools[t].quad = love.graphics.newQuad(tools[t].iconOffset[1], tools[t].iconOffset[2], 32, 32, Editor.image:getWidth(), Editor.image:getHeight())
     end
     
-    Editor.toolbarWidth = table.getn(tools) * 32
+    Editor.toolbarWidth = math.max(table.getn(tools), table.getn(Map.tileset)) * 32
     Editor.layerbarHeight = (Map.map.layers.count + 1) * 32
     Editor.tx = 0
     Editor.ty = 0
