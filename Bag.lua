@@ -8,12 +8,13 @@ end
 function Bag:pop(item)
 	if not self.stock[item] then return end
 	self.stock[item] = self[item] - 1
-	if self.stock[item] == nil then self[item] = nil end
+	if self.stock[item] == 0 then self[item] = nil end
 end
+
 local FONT_SIZE = 24
 local font = love.graphics.setNewFont(FONT_SIZE)
 love.graphics.setFont(font)
-function Bag:draw()
+function Bag.draw()
 	love.graphics.setColor(0, 0, 255)
 	love.graphics.rectangle("fill", 0, 0, 800, 600)
 	love.graphics.setColor(200, 200, 201)
@@ -22,6 +23,17 @@ function Bag:draw()
 		love.graphics.printf(k .. "    x" .. v, 0, y, 400, "right")
 		y = y + FONT_SIZE
 	end 
+end
+
+local blib = love.sound.newSoundData("sfx/blib.ogg")
+local sp = 1
+function Bag.keypressed(key)
+	local max = 0
+	local b  = love.audio.newSource(blib)
+	love.audio.play(b)
+	for k in pairs(Bag.stock) do max = max + 1 end
+	print(key)
+	 
 end
 
 Bag:add("Women's Shorts")
