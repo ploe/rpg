@@ -218,10 +218,8 @@ function Editor.drawMap()
         love.graphics.setColor(255, 255, 255)
     end
     if TileCursorInBounds() then
-        -- Draw a rectangle at current tile position
-        love.graphics.setColor(255, 0, 0, 96)
-        love.graphics.rectangle('fill', (Editor.tx - 1) * 32, (Editor.ty - 1) * 32, 32, 32)
-        love.graphics.setColor(255, 255, 255)
+        -- Draw image of current tool at tile x/y position
+        love.graphics.drawq(Editor.image, tools[Editor.tool].quad, (Editor.tx - 1) * 32, (Editor.ty - 1) * 32)
     end
     -- Draw map bounds
     love.graphics.setColor(255, 0, 0)
