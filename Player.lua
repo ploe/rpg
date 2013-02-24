@@ -65,7 +65,7 @@ function Player:listen()
 	end
 
 	
-	if Map.isSolid(1, x, y) or Map.isSolid(2, x, y) then stopPlayer(self)
+	if x <= 0 or y <= 0 or x > Map.map.width or y > Map.map.height or Map.isSolid(1, x, y) or Map.isSolid(2, x, y) then stopPlayer(self)
 	else movePlayer(self, x, y) end
 end
 
