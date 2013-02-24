@@ -4,6 +4,7 @@ require('Map')
 require('Editor')
 require('Player')
 require('Game')
+require('Bag')
 
 -- Camera offset
 xOff = 0
@@ -19,6 +20,7 @@ function love.load()
     
     Editor.init()
     currentState = Game
+    currentState = Bag
 end
 
 function love.update()
