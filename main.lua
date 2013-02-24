@@ -44,9 +44,22 @@ function centerCamera(x, y)
 	yOff = 300 - y
 end
 
+function clamp(v, mi, ma)
+	if v < mi then v = mi end
+	if v > ma then v = ma end
+	return v
+end
+
+-- Clamp camera to map edges
+function clampCamera()
+	xOff = clamp(xOff, -(Map.map.width - 25) * 32 , 0)
+	yOff = clamp(yOff, -(Map.map.height - 19) * 32, 0)
+end
+
 function love.draw()
 	love.graphics.push()
 	centerCamera(Player.x + 16, Player.y + 24)
+	clampCamera()
 	love.graphics.translate(xOff, yOff)
 	Editor.drawMap()
 	Action:update()
