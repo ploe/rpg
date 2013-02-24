@@ -21,22 +21,61 @@ local function pixToTileCoord(x, y)
     return math.floor(x / 32) + 1, math.floor(y / 32) + 1
 end
 
--- Tools
--- Each tool has a name, icon offset, and a function
+------------------------------------------------
+-- Tools for the editor
+------------------------------------------------
+-- Mandatory members:
+-- name: Name of the tool
+-- iconOffset: Offset of its icon in editor.png
+-- exec: Function to execute when tool is used
+------------------------------------------------
+-- Optional members:
+-- selectable: Tool is selectable
+-- brush: Tool can be applied as a brush
 local tools =
 {    
+    {
+        name = 'Tile Stamp',
+        iconOffset = {64, 64},
+        exec = function()
+            Map.map.layers[Editor.layer][Editor.ty][Editor.tx] = Editor.tile
+            Map.updateBatch(Editor.layer)
+        end,
+        selectable = true,
+        brush = true
+    },
     {
         name = 'Eraser',
         iconOffset = {0, 0},
         exec = function()
-            Editor.tile = 0
-        end
+            Map.map.layers[Editor.layer][Editor.ty][Editor.tx] = 0
+            Map.updateBatch(Editor.layer)
+        end,
+        selectable = true,
+        brush = true
+    },
+    {
+        name = 'Bucket Fill',
+        iconOffset = {32, 64},
+        exec = function(x, y)
+            local tiles = Map.map.layers[Editor.layer]
+            
+            for yy = y, Map.map.height do
+                for xx = x, Map.map.width do
+                    tiles[yy][xx] = Editor.tile
+                end
+            end
+            
+            Map.updateBatch(Editor.layer)
+        end,
+        selectable = true
     },
     {
         name = 'Reload',
         iconOffset = {64, 0},
         exec = function()
             Map.load(Map.filename)
+            Editor.init()
         end
     },
     {
@@ -102,7 +141,7 @@ function Editor.init()
     Editor.layer = 1
     Editor.image = love.graphics.newImage('img/editor.png')
     Editor.tile = 1
-    Editor.fadeInactiveLayers = false
+    Editor.fadeInactiveLayers = true
     love.graphics.setCaption(Map.filename or "Editor Mode")
     Editor.newLayerQuad = love.graphics.newQuad(0, 64, 32, 32, Editor.image:getWidth(), Editor.image:getHeight())
 
@@ -111,13 +150,12 @@ function Editor.init()
         tools[t].quad = love.graphics.newQuad(tools[t].iconOffset[1], tools[t].iconOffset[2], 32, 32, Editor.image:getWidth(), Editor.image:getHeight())
     end
     
-    Editor.toolbarWidth = table.getn(tools) * 32
+    Editor.toolbarWidth = math.max(table.getn(tools), table.getn(Map.tileset)) * 32
     Editor.layerbarHeight = (Map.map.layers.count + 1) * 32
     Editor.tx = 0
     Editor.ty = 0
-    Editor.xOff = 0
-    Editor.yOff = 0
     Editor.scrolling = false
+    Editor.tool = 1
 end
 
 local function inRect(x, y, rx, ry, rw, rh)
@@ -139,15 +177,17 @@ function Editor.update()
         
         -- Update offset if scrolling
         if Editor.scrolling then
-            Editor.xOff = Editor.prevXOff + (Editor.scrollOrigX - mx)
-            Editor.yOff = Editor.prevYOff + (Editor.scrollOrigY - my)
+            xOff = Editor.prevXOff + (Editor.scrollOrigX - mx)
+            yOff = Editor.prevYOff + (Editor.scrollOrigY - my)
         end
         
         -- Update tile cursor
-        Editor.tx, Editor.ty = pixToTileCoord(love.mouse.getX() - Editor.xOff, love.mouse.getY() - Editor.yOff)
+        Editor.tx, Editor.ty = pixToTileCoord(love.mouse.getX() - xOff, love.mouse.getY() - yOff)
+        
+        -- Apply brushtool to map
         if love.mouse.isDown('l') and TileCursorInBounds() then
-            Map.map.layers[Editor.layer][Editor.ty][Editor.tx] = Editor.tile
-            Map.updateBatch(Editor.layer)
+            local t = tools[Editor.tool]
+            if t.brush then t.exec(tx, ty) end
         end
     end
 end
@@ -155,9 +195,21 @@ end
 -- Draw the map editor
 -- Call this in love.draw()
 function Editor.draw()
-    -- Draw layers of map
     love.graphics.push()
-    love.graphics.translate(Editor.xOff, Editor.yOff)
+    love.graphics.translate(xOff, yOff)
+    Editor.drawMap()
+    love.graphics.pop()
+    Editor.drawUI()
+end
+
+function Editor.keypressed(key, unicode)
+    if key == 'return' and love.keyboard.isDown('lctrl') then
+	currentState = Game
+    end
+end
+
+function Editor.drawMap()
+    -- Draw layers of map
     for l = 1, Map.map.layers.count do
         if l ~= Editor.layer and Editor.fadeInactiveLayers then
             love.graphics.setColor(255, 255, 255, 128)
@@ -166,17 +218,17 @@ function Editor.draw()
         love.graphics.setColor(255, 255, 255)
     end
     if TileCursorInBounds() then
-        -- Draw a rectangle at current tile position
-        love.graphics.setColor(255, 0, 0, 96)
-        love.graphics.rectangle('fill', (Editor.tx - 1) * 32, (Editor.ty - 1) * 32, 32, 32)
-        love.graphics.setColor(255, 255, 255)
+        -- Draw image of current tool at tile x/y position
+        love.graphics.drawq(Editor.image, tools[Editor.tool].quad, (Editor.tx - 1) * 32, (Editor.ty - 1) * 32)
     end
     -- Draw map bounds
     love.graphics.setColor(255, 0, 0)
     love.graphics.rectangle('line', 0, 0, Map.map.width * 32, Map.map.height * 32)
     love.graphics.setColor(255, 255, 255)
-    love.graphics.pop()
-    -- Draw rect for bottom bar
+end
+
+function Editor.drawUI()
+-- Draw rect for bottom bar
     love.graphics.setColor(0, 0, 0, 128)
     love.graphics.rectangle('fill', 0, 600 - 64, Editor.toolbarWidth, 64)
     love.graphics.setColor(255, 255, 255)
@@ -184,14 +236,6 @@ function Editor.draw()
     for i = 1, table.getn(Map.tileset) do
         love.graphics.drawq(Map.image, Map.tileset[i].quad, (i - 1) * 32, 600 - 64)
     end
-    -- Highlight selected tile
-    love.graphics.setColor(255, 255, 255, 128)
-    if Editor.tile == 0 then
-        love.graphics.rectangle('fill', 0, 600 - 32, 32, 32)
-    else
-        love.graphics.rectangle('fill', (Editor.tile - 1) * 32, 600 - 64, 32, 32)
-    end
-    love.graphics.setColor(255, 255, 255)
     -- Draw rect for layer bar
     love.graphics.setColor(0, 0, 0, 128)
     love.graphics.rectangle('fill', 800 - 32, 0, 32, Editor.layerbarHeight)
@@ -211,6 +255,13 @@ function Editor.draw()
     for t = 1, table.getn(tools) do
         love.graphics.drawq(Editor.image, tools[t].quad, (t - 1) * 32, 600 - 32)
     end
+    -- Highlight selected tile and tool
+    love.graphics.setColor(255, 255, 255, 128)
+    if Editor.tool then
+        love.graphics.rectangle('fill', (Editor.tool - 1) * 32, 600 - 32, 32, 32)
+    end
+    love.graphics.rectangle('fill', (Editor.tile - 1) * 32, 600 - 64, 32, 32)
+    love.graphics.setColor(255, 255, 255)
     -- Draw overlay info for
     local mx = love.mouse.getX()
     local my = love.mouse.getY()
@@ -235,14 +286,18 @@ end
 -- Mouse event handler
 -- Call this in love.mousepressed
 function Editor.mousepressed(x, y, button)
-    
+    -- Apply non-brush tool to map
+    if not mouseOnUI() and button == 'l' then
+        local t = tools[Editor.tool]
+        if not t.brush then t.exec(pixToTileCoord(x - xOff, y - yOff)) end
+    end
     -- Scroll with right mouse button
     if button == 'r' then
         Editor.scrolling = true
         Editor.scrollOrigX = x
         Editor.scrollOrigY = y
-        Editor.prevXOff = Editor.xOff
-        Editor.prevYOff = Editor.yOff
+        Editor.prevXOff = xOff
+        Editor.prevYOff = yOff
     end
     
     -- Layer select/add/remove
@@ -269,11 +324,16 @@ function Editor.mousepressed(x, y, button)
             Editor.tile = tx
         end
     end
-    -- Tool select
+    
+    -- Tool select/execute
     if y >= 600 -32 then
         local tool = pixToTileCoord(x, y)
         if tool <= table.getn(tools) then
-            tools[tool].exec()
+            if tools[tool].selectable then
+                Editor.tool = tool
+            else
+                tools[tool].exec()
+            end
         end
     end
 end

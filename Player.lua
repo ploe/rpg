@@ -60,9 +60,7 @@ function Player:listen()
 		self.vector.x = 8
 		self:jumpReel(3)
 		x = x + 1
-	end
-
-	if Signal["up pressed"] then 
+	elseif Signal["up pressed"] then 
 		self.vector.y = -8
 		self:jumpReel(1)
 		y = y - 1
@@ -72,10 +70,10 @@ function Player:listen()
 		y = y + 1
 	end
 
-	
-	if Map.isSolid(1, x, y) or Map.isSolid(2, x, y) then stopPlayer(self)
-	else movePlayer(self, x, y) print(Map.tileInfo(1, x, y))
-	end
+	if x <= 0 or y <= 0 or x > Map.map.width or y > Map.map.height or Map.isSolid(1, x, y) then stopPlayer(self)
+	else movePlayer(self, x, y) end
+
+
 end
 
 Player.update = Player.listen

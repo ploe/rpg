@@ -3,6 +3,11 @@ require("Action")
 require('Map')
 require('Editor')
 require('Player')
+require('Game')
+
+-- Camera offset
+xOff = 0
+yOff = 0
 
 function love.load()
 	JIFFY = 1/30
@@ -13,26 +18,31 @@ function love.load()
     	end
     
     Editor.init()
+    currentState = Game
 end
 
 function love.update()
 	start = love.timer.getMicroTime()
-	Editor.update()
+	if currentState.update then currentState.update() end
+end
+
+function love.keypressed(key, unicode)
+	if key == 'return' and love.keyboard.isDown('lalt') then
+		love.graphics.toggleFullscreen()
+	end
+	if currentState.keypressed then currentState.keypressed(key, unicode) end
 end
 
 function love.mousepressed(x, y, button)
-	Editor.mousepressed(x, y, button)
+	if currentState.mousepressed then currentState.mousepressed(x, y, button) end
 end
 
 function love.mousereleased(x, y, button)
-	Editor.mousereleased(x, y, button)
+	if currentState.mousereleased then currentState.mousereleased(x, y, button) end
 end
 
 function love.draw()
-	love.graphics.setCaption("An RPG in Nine Days?")
-	Editor.draw()
-	Action:update()
-	Actor.draw()
+	if currentState.draw then currentState.draw() end
 	if love.timer.getMicroTime() <= start + JIFFY then love.timer.sleep(start + JIFFY - love.timer.getMicroTime()) end
 	Signal = {}
 end
