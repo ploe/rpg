@@ -25,11 +25,6 @@ end
 local function  movePlayer(self, x, y)
 	self.grid.x = x; self.grid.y = y
 	local step = 4					-- lexical scoping, bitch ;) Essentially like a private variable for the walking
-	if self.vector.x and self.vector.y then
-		self.vector.x = self.vector.x / 2	-- half the vector speed for diagonal movement
-		self.vector.y = self.vector.y / 2
-		step = 8
-	end
 
 	if self.vector.x or self.vector.y then
 		self.animate = self.walk
