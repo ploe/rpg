@@ -6,10 +6,6 @@ require('Player')
 require('Game')
 require('Bag')
 
--- Camera offset
-xOff = 0
-yOff = 0
-
 function setState(state)
     if currentState and currentState.unset then currentState.unset() end
     currentState = state
@@ -17,6 +13,8 @@ function setState(state)
 end
 
 function love.load()
+    xOff = 0
+    yOff = 0
     JIFFY = 1/30
     Action:push(Player)
     if not Map.load("plains.lua") then
