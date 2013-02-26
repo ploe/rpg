@@ -32,7 +32,6 @@ local function  movePlayer(self, x, y)
 	end
 
 	if self.vector.x or self.vector.y then
-		print(x.." "..y)
 		self.animate = self.walk
 		self.update = function (self)
 			if self.vector.x then self.x = self.x + self.vector.x end
