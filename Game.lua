@@ -28,7 +28,7 @@ end
 
 function Game.keypressed(key, unicode)
     if key == 'return' then
-        if love.keyboard.isDown('lctrl') then
+        if devmode and love.keyboard.isDown('lctrl') then
             setState(Editor)
         elseif not love.keyboard.isDown('lalt') then
             setState(Bag)

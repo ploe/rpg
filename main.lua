@@ -39,6 +39,7 @@ function love.load()
     
     Editor.init()
     setState(Game)
+    devmode = true -- Enable development mode. Comment/delete this line when game is released.
 end
 
 function love.update()
