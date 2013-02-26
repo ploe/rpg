@@ -208,7 +208,7 @@ end
 
 function Editor.keypressed(key, unicode)
     if key == 'return' and love.keyboard.isDown('lctrl') then
-	currentState = Game
+        setState(Game)
     end
 end
 
