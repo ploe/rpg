@@ -20,7 +20,7 @@ function love.load()
     if not Map.load("plains.lua") then
         print('Failed to load map')
         love.event.quit()
-        end
+    end
     
     Editor.init()
     setState(Game)
