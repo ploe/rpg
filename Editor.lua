@@ -142,7 +142,6 @@ function Editor.init()
     Editor.image = love.graphics.newImage('img/editor.png')
     Editor.tile = 1
     Editor.fadeInactiveLayers = true
-    love.graphics.setCaption(Map.filename or "Editor Mode")
     Editor.newLayerQuad = love.graphics.newQuad(0, 64, 32, 32, Editor.image:getWidth(), Editor.image:getHeight())
 
     -- Create quads for the tools
@@ -159,6 +158,7 @@ function Editor.init()
 end
 
 function Editor.set()
+    love.graphics.setCaption("Edit mode - "..Map.filename)
     love.graphics.setNewFont()
 end
 

@@ -22,6 +22,10 @@ end
 function Game.update()
 end
 
+function Game.set()
+    love.graphics.setCaption("RPG - "..Map.map.name)
+end
+
 function Game.keypressed(key, unicode)
     if key == 'return' then
         if love.keyboard.isDown('lctrl') then
