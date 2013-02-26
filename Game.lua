@@ -23,8 +23,12 @@ function Game.update()
 end
 
 function Game.keypressed(key, unicode)
-    if key == 'return' and love.keyboard.isDown('lctrl') then
-	currentState = Editor
+    if key == 'return' then
+        if love.keyboard.isDown('lctrl') then
+            setState(Editor)
+        elseif not love.keyboard.isDown('lalt') then
+            setState(Bag)
+        end
     end
 end
 

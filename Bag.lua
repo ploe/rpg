@@ -12,8 +12,11 @@ function Bag:pop(item)
 end
 
 local FONT_SIZE = 24
-local font = love.graphics.setNewFont(FONT_SIZE)
-love.graphics.setFont(font)
+
+function Bag.set()
+	love.graphics.setNewFont(FONT_SIZE)
+end
+
 function Bag.draw()
 	love.graphics.setColor(0, 0, 255)
 	love.graphics.rectangle("fill", 0, 0, 800, 600)
@@ -23,6 +26,7 @@ function Bag.draw()
 		love.graphics.printf(k .. "    x" .. v, 0, y, 400, "right")
 		y = y + FONT_SIZE
 	end 
+	love.graphics.setColor(255, 255, 255)
 end
 
 local blib = love.sound.newSoundData("sfx/blib.ogg")
@@ -32,7 +36,9 @@ function Bag.keypressed(key)
 	local b  = love.audio.newSource(blib)
 	love.audio.play(b)
 	for k in pairs(Bag.stock) do max = max + 1 end
-	print(key)
+	if key == 'return' then
+		setState(Game)
+	end
 	 
 end
 

@@ -158,6 +158,10 @@ function Editor.init()
     Editor.tool = 1
 end
 
+function Editor.set()
+    love.graphics.setNewFont()
+end
+
 local function inRect(x, y, rx, ry, rw, rh)
     return x >= rx and y >= ry and x <= rx + rw and y <= ry + rh
 end
