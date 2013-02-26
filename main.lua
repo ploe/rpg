@@ -10,6 +10,12 @@ require('Bag')
 xOff = 0
 yOff = 0
 
+function setState(state)
+    if currentState and currentState.unset then currentState.unset() end
+    currentState = state
+    if currentState.set then currentState.set() end
+end
+
 function love.load()
     JIFFY = 1/30
     Action:push(Player)
@@ -19,8 +25,7 @@ function love.load()
         end
     
     Editor.init()
-    currentState = Game
-    currentState = Bag
+    setState(Game)
 end
 
 function love.update()
