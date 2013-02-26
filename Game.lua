@@ -26,6 +26,16 @@ function Game.set()
     love.graphics.setCaption("RPG - "..Map.map.name)
 end
 
+function Game.mousepressed(x, y, button)
+    if devmode then
+        -- Teleport player with mouse
+        Player.grid.x = math.floor((x - xOff) / 32) + 1
+        Player.grid.y = math.floor((y - yOff) / 32) + 1
+        Player.x = (Player.grid.x - 1) * 32
+        Player.y = (Player.grid.y - 1) * 32 - 12
+    end
+end
+
 function Game.keypressed(key, unicode)
     if key == 'return' then
         if devmode and love.keyboard.isDown('lctrl') then
