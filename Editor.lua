@@ -1,12 +1,6 @@
 ------------------------------------------------
 -- Editor: Map Editor module
 ------------------------------------------------
--- Plug interface:
--- love.update() -> Editor.update()
--- love.draw() -> Editor.draw()
--- love.mousepressed() -> Editor.mousepressed()
--- love.mousereleased() -> Editor.mousereleased()
-------------------------------------------------
 
 Editor = {}
 
@@ -172,8 +166,6 @@ local function mouseOnUI()
     return inRect(mx, my, 800 - 32, 0, 32, Editor.layerbarHeight) or inRect(mx, my, 0, 600 - 64, Editor.toolbarWidth, 64)
 end
 
--- Update the map editor
--- Call this in love.update()
 function Editor.update()
     if not mouseOnUI() then
         local mx = love.mouse.getX()
@@ -196,8 +188,6 @@ function Editor.update()
     end
 end
 
--- Draw the map editor
--- Call this in love.draw()
 function Editor.draw()
     love.graphics.push()
     love.graphics.translate(xOff, yOff)
@@ -287,8 +277,6 @@ function Editor.drawUI()
     end
 end
 
--- Mouse event handler
--- Call this in love.mousepressed
 function Editor.mousepressed(x, y, button)
     -- Apply non-brush tool to map
     if not mouseOnUI() and button == 'l' then
@@ -342,8 +330,6 @@ function Editor.mousepressed(x, y, button)
     end
 end
 
--- Mouse release event handler
--- Call this in love.mousereleased
 function Editor.mousereleased(x, y, button)
     if button == 'r' then
         Editor.scrolling = false
