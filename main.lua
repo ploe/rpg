@@ -19,7 +19,6 @@ function love.load()
     	end
     
     Editor.init()
-    currentState = Game
     currentState = Bag
 end
 
