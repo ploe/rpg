@@ -6,6 +6,21 @@ require('Player')
 require('Game')
 require('Bag')
 
+--------------------------------------------------------------------------------
+-- State interface
+--------------------------------------------------------------------------------
+-- Name                        Called on
+--------------------------------------------------------------------------------
+-- set()                       setState(): State set to this state
+-- unset()                     setState(): State set from this to another state
+--------------------------------------------------------------------------------
+-- update()                    love.update()
+-- draw()                      love.draw()
+--------------------------------------------------------------------------------
+-- keypressed(key, unicode)    love.keypressed()
+-- mousepressed(x, y, button)  love.mousepressed()
+-- mousereleased(x, y, button) love.mousereleased()
+--------------------------------------------------------------------------------
 function setState(state)
     if currentState and currentState.unset then currentState.unset() end
     currentState = state
