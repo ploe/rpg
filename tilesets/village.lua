@@ -22,7 +22,7 @@ local tiles =
     },
     -- Black wall
     {
-        offset = {x = 64, y = 256}
+        offset = {x = 64, y = 256},
         solid = true
     },
     -- Door (upper)
