@@ -23,7 +23,7 @@ function Game.update()
 end
 
 function Game.set()
-    love.graphics.setCaption("RPG - "..Map.map.name)
+    love.window.setTitle("RPG - "..Map.map.name)
 end
 
 function Game.mousepressed(x, y, button)

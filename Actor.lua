@@ -71,7 +71,7 @@ function Actor_prototype:draw()
 	-- print("clip: " .. Player.clip.x .. "/" .. Player.clip.y .. "/" .. Player.clip.w .. "/" .. Player.clip.h)
 
 	updateViewport(self)
-	love.graphics.drawq(self.costume, self.quad, self.x, self.y)
+	love.graphics.draw(self.costume, self.quad, self.x, self.y)
 end
 
 --[[ lib is the public interface for the Actor module ]]

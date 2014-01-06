@@ -80,7 +80,7 @@ local tools =
             -- Can't be used without a console open
             filename = io.read()
             Map.load(filename)
-            love.graphics.setCaption(Map.filename)
+            love.window.setTitle(Map.filename)
         end
     },
     {
@@ -98,7 +98,7 @@ local tools =
             -- Can't be used without a console open
             filename = io.read()
             Map.saveToFile(filename)
-            love.graphics.setCaption(Map.filename)
+            love.window.setTitle(Map.filename)
         end
     },
     {
@@ -152,7 +152,7 @@ function Editor.init()
 end
 
 function Editor.set()
-    love.graphics.setCaption("Edit mode - "..Map.filename)
+    love.window.setTitle("Edit mode - "..Map.filename)
     love.graphics.setNewFont()
 end
 
@@ -213,7 +213,7 @@ function Editor.drawMap()
     end
     if TileCursorInBounds() then
         -- Draw image of current tool at tile x/y position
-        love.graphics.drawq(Editor.image, tools[Editor.tool].quad, (Editor.tx - 1) * 32, (Editor.ty - 1) * 32)
+        love.graphics.draw(Editor.image, tools[Editor.tool].quad, (Editor.tx - 1) * 32, (Editor.ty - 1) * 32)
     end
     -- Draw map bounds
     love.graphics.setColor(255, 0, 0)
@@ -228,7 +228,7 @@ function Editor.drawUI()
     love.graphics.setColor(255, 255, 255)
     -- Draw available tiles in tileset
     for i = 1, table.getn(Map.tileset) do
-        love.graphics.drawq(Map.image, Map.tileset[i].quad, (i - 1) * 32, 600 - 64)
+        love.graphics.draw(Map.image, Map.tileset[i].quad, (i - 1) * 32, 600 - 64)
     end
     -- Draw rect for layer bar
     love.graphics.setColor(0, 0, 0, 128)
@@ -244,10 +244,10 @@ function Editor.drawUI()
         love.graphics.rectangle('line', 800 - 32, (l - 1) * 32, 32, 32)
         love.graphics.print(l, 800 - 20, ((l - 1) * 32) + 9)
     end
-    love.graphics.drawq(Editor.image, Editor.newLayerQuad, 800 - 32, Map.map.layers.count * 32)
+    love.graphics.draw(Editor.image, Editor.newLayerQuad, 800 - 32, Map.map.layers.count * 32)
     -- Draw buttons for tools
     for t = 1, table.getn(tools) do
-        love.graphics.drawq(Editor.image, tools[t].quad, (t - 1) * 32, 600 - 32)
+        love.graphics.draw(Editor.image, tools[t].quad, (t - 1) * 32, 600 - 32)
     end
     -- Highlight selected tile and tool
     love.graphics.setColor(255, 255, 255, 128)
