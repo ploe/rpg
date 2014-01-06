@@ -43,13 +43,13 @@ function love.load()
 end
 
 function love.update()
-    start = love.timer.getMicroTime()
+    start = love.timer.getTime()
     if currentState.update then currentState.update() end
 end
 
 function love.keypressed(key, unicode)
     if key == 'return' and love.keyboard.isDown('lalt') then
-        love.graphics.toggleFullscreen()
+        love.window.setFullscreen(not love.window.getFullscreen())
     end
     if currentState.keypressed then currentState.keypressed(key, unicode) end
 end
@@ -64,7 +64,7 @@ end
 
 function love.draw()
     if currentState.draw then currentState.draw() end
-    if love.timer.getMicroTime() <= start + JIFFY then love.timer.sleep(start + JIFFY - love.timer.getMicroTime()) end
+    if love.timer.getTime() <= start + JIFFY then love.timer.sleep(start + JIFFY - love.timer.getTime()) end
     Signal = {}
 end
 

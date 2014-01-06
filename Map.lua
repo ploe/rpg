@@ -68,7 +68,7 @@ function Map.updateBatch(layer)
                     return false
                 end
                 -- Add to the sprite batch
-                Map.batch[layer]:addq(tile.quad, (x - 1) * Map.tileset.tileWidth, (y - 1) * Map.tileset.tileHeight)
+                Map.batch[layer]:add(tile.quad, (x - 1) * Map.tileset.tileWidth, (y - 1) * Map.tileset.tileHeight)
             end
         end
     end
